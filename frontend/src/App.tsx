@@ -4,6 +4,7 @@ import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Layout from "./layouts/layout";
 import ConversionPage from "./pages/conversion-page";
+import HistoryPage from "./pages/my-history";
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
           element={
             <Layout>
               <Signup />
+            </Layout>
+          }
+        />
+                <Route
+          path="/my-history"
+          element={
+            <Layout>
+              <HistoryPage />
             </Layout>
           }
         />

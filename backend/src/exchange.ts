@@ -1,14 +1,13 @@
 import axios from "axios";
 import express from "express";
 import { Request, Response } from "express";
-
-const EXCHANGE_RATE_API_URL = "http://api.exchangeratesapi.io/v1";
+import { db } from "./firebaseAdmin";
 
 const router = express.Router();
 
 // Endpoint to convert currency
 router.get("/convert", async (req: Request, res: Response) => {
-  const { from, to, amount } = req.query;
+  const { from, to, amount, userId } = req.query;
 
   if (!from || !to || !amount) {
     return res
@@ -21,7 +20,7 @@ router.get("/convert", async (req: Request, res: Response) => {
       `https://api.freecurrencyapi.com/v1/latest`,
       {
         params: {
-          apikey: "fca_live_NRYiJ4yYdTIPYGJADAQcWcFx7GkAzoGwUtsdERZ1",
+          apikey: process.env.FREE_CURRENCY_API_KEY,
           base_currency: from,
           currencies: to,
         },
@@ -32,12 +31,25 @@ router.get("/convert", async (req: Request, res: Response) => {
     const rate = data.data[to as string];
 
     if (!rate) {
-      return res
-        .status(400)
-        .json({ error: "Failed to fetch the exchange rate for the given currency pair" });
+      return res.status(400).json({
+        error: "Failed to fetch the exchange rate for the given currency pair",
+      });
     }
 
     const convertedAmount = rate * parseFloat(amount as string);
+
+    // Save conversion history to Firestore
+    const conversionData = {
+      userId: userId as string,
+      from: from as string,
+      to: to as string,
+      amount: parseFloat(amount as string),
+      rate,
+      convertedAmount,
+      date: new Date(),
+    };
+
+    await db.collection("history").add(conversionData);
 
     res.json({
       success: true,
@@ -61,7 +73,7 @@ router.get("/symbols", async (req: Request, res: Response) => {
       "https://api.freecurrencyapi.com/v1/currencies",
       {
         params: {
-          apikey: "fca_live_NRYiJ4yYdTIPYGJADAQcWcFx7GkAzoGwUtsdERZ1",
+          apikey: process.env.FREE_CURRENCY_API_KEY,
         },
         headers: {
           "Content-Type": "application/json",

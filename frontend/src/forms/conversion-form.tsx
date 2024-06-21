@@ -6,6 +6,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { TextField } from "@mui/material";
+import { getAuth } from "firebase/auth";
+
 
 type ConversionForm = {
   fromCurrency: string;
@@ -28,6 +30,10 @@ const ConversionForm = () => {
       },
     }
   );
+
+  const auth = getAuth();
+const user = auth.currentUser;
+const uid = user?.uid;
 
   const [symbols, setSymbols] = useState<Record<string, string>>({});
   const [convertedAmount, setConvertedAmount] = useState<number>(0);
@@ -75,6 +81,7 @@ const ConversionForm = () => {
             from: data.fromCurrency,
             to: data.toCurrency,
             amount: data.amount,
+            userId: uid
           },
 
         }
