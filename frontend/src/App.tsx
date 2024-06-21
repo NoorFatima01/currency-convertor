@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Layout from "./layouts/layout";
+import ConversionPage from "./pages/conversion-page";
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
           path="/"
           element={
             <Layout>
-              <>Main Page</>
+              <ConversionPage/>
             </Layout>
           }
         />
