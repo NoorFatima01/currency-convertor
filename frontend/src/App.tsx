@@ -5,8 +5,21 @@ import Login from "./pages/login";
 import Layout from "./layouts/layout";
 import ConversionPage from "./pages/conversion-page";
 import HistoryPage from "./pages/my-history";
+import { useEffect, useState } from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "./Firebase";
 
 function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
   return (
     <BrowserRouter>
       <Routes>

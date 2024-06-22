@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { auth } from "../Firebase";
 import { useNavigate } from "react-router";
@@ -16,16 +16,18 @@ const LoginForm = () => {
     },
   });
   const navigate = useNavigate();
-
   const onSubmit = (data: LoginForm) => {
-    console.log(data.email, data.password);
-    signInWithEmailAndPassword(auth, data.email, data.password)
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        return signInWithEmailAndPassword(auth, data.email, data.password);
+      })
       .then((userCredential) => {
         const user = userCredential.user;
         navigate("/");
         console.log(user);
       })
       .catch((error) => {
+        // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);

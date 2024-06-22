@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../Firebase";
 import { useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
@@ -24,13 +24,17 @@ const SignupForm = () => {
     await createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
+        // Set the displayName on the user profile
+        await updateProfile(user, {
+          displayName: data.fullName,
+        });
         await addDoc(collection(db, "users"), {
           uid: user.uid,
-          name: data.fullName,
+          displayName: data.fullName,
           authProvider: "local",
           email: data.email,
         });
-        navigate("/login");
+        navigate("/");
       })
 
       .catch((error) => {

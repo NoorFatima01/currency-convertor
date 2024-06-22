@@ -93,4 +93,24 @@ router.get("/symbols", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/history/:userId", async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res.status(400).json({ error: "Missing required parameter: userId" });
+  }
+
+  try {
+    const historyCollection = db.collection("history");
+    const userHistory = await historyCollection.where("userId", "==", userId).get();
+    const history = userHistory.docs.map(doc => doc.data());
+    console.log(history)
+
+    res.json({ success: true, history });
+  } catch (error: any) {
+    console.error("Error fetching history:", error.message);
+    res.status(500).json({ error: "Failed to fetch history" });
+  }
+});
+
 export default router;
