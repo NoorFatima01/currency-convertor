@@ -62,7 +62,7 @@ const HistoryPage = () => {
 
   useEffect(() => {
     navigate(`/my-history?page=${page + 1}`);
-  }, [page, navigate]);
+  }, [page]);
 
   if (loading) {
     return <div>Loading...</div>;

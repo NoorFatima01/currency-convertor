@@ -13,7 +13,9 @@ const Header = () => {
   }
   return (
     <header className="bg-darkishBlue flex items-center justify-between p-4 text-textColor">
-      <h1 className="text-3xl font-bold">Currency Convertor</h1>
+      <a href="/">
+        <h1 className="text-3xl font-bold">Currency Convertor</h1>
+      </a>
 
       {/* log in or sign up buttons */}
       <nav>
