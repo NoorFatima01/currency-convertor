@@ -1,7 +1,13 @@
-import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  browserSessionPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { auth } from "../Firebase";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type LoginForm = {
   email: string;
@@ -21,13 +27,17 @@ const LoginForm = () => {
       .then(() => {
         return signInWithEmailAndPassword(auth, data.email, data.password);
       })
-      .then((userCredential) => {
-        const user = userCredential.user;
+      .then(() => {
+        toast.success("Login successful", {
+          position: "top-right",
+        });
         navigate("/");
-        console.log(user);
       })
       .catch((error) => {
         // Handle Errors here.
+        toast.error("Login failed", {
+          position: "top-right",
+        });
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);

@@ -7,6 +7,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { TextField } from "@mui/material";
 import { getAuth } from "firebase/auth";
+import { toast } from "react-toastify";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type ConversionForm = {
   fromCurrency: string;
@@ -34,11 +36,11 @@ const ConversionForm = () => {
 
   const [symbols, setSymbols] = useState<Record<string, string>>({});
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
   const prevConvertedAmount = useRef<number | null>(null);
 
   const fetchCurrencies = async () => {
     try {
-      console.log("in fetch");
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/exchange/symbols`
       );
@@ -72,6 +74,7 @@ const ConversionForm = () => {
 
   const onSubmit = async (data: ConversionForm) => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/exchange/convert`,
         {
@@ -86,8 +89,13 @@ const ConversionForm = () => {
 
       prevConvertedAmount.current = convertedAmount;
       setConvertedAmount(response.data.convertedAmount);
+      setLoading(false);
     } catch (error) {
+      toast.error("Failed to convert", {
+        position: "top-right",
+      });
       console.error("Error converting currency:", error);
+      setLoading(false);
     }
   };
 
@@ -158,12 +166,21 @@ const ConversionForm = () => {
               />
             </div>
 
-            <button
-              type="submit"
-              className="ml-2 mt-2 text-white bg-darkishBlue p-2 rounded-md hover:bg-lightBlue"
-            >
-              Convert
-            </button>
+            {!loading ? (
+              <button
+                type="submit"
+                className="ml-2 mt-2 text-white bg-darkishBlue p-2 rounded-md hover:bg-lightBlue"
+              >
+                Convert
+              </button>
+            ) : (
+              <button
+                disabled
+                className="ml-2 flex gap-2 items-center justify-center mt-2 text-white bg-darkishBlue p-2 rounded-md hover:bg-lightBlue"
+              >
+                <CircularProgress color="secondary" size={15} /> <p>Convert</p>
+              </button>
+            )}
           </div>
         </form>
 

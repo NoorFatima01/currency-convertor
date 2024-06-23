@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../Firebase";
 import { useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 type SignupFormSchema = {
   fullName: string;
@@ -34,10 +35,14 @@ const SignupForm = () => {
           authProvider: "local",
           email: data.email,
         });
+        toast.success("Signup successful", {
+          position: "top-right",
+        });
         navigate("/");
       })
 
       .catch((error) => {
+        toast.error("Signup failed", { position: "top-right" });
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);

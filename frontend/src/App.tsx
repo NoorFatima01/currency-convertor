@@ -8,6 +8,7 @@ import HistoryPage from "./pages/my-history";
 import { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./Firebase";
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -56,6 +57,7 @@ function App() {
           }
         />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }
