@@ -1,4 +1,5 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+
 const columns: GridColDef[] = [
   { field: "id", headerName: "Ser No.", width: 70 },
   { field: "from", headerName: "From", width: 130 },
@@ -8,22 +9,46 @@ const columns: GridColDef[] = [
   { field: "date", headerName: "Date", width: 130 },
 ];
 
-type historyTableProps = {
+type HistoryTableProps = {
   rows: unknown[];
+  page: number;
+  pageSize: number;
+  setPage: (page: number) => void;
+  setPageSize: (pageSize: number) => void;
+  rowCount: number;
 };
 
-export default function HistoryTable({ rows }: historyTableProps) {
+export default function HistoryTable({
+  rows,
+  page,
+  pageSize,
+  setPage,
+  setPageSize,
+  rowCount,
+}: HistoryTableProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePageChange = (params: any) => {
+    setPage(params.page);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePageSizeChange = (params: any) => {
+    setPageSize(params.pageSize);
+  };
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
+        paginationMode="server"
+        rowCount={rowCount}
+        paginationModel={{ page, pageSize }}
+        onPaginationModelChange={(model) => {
+          handlePageChange(model);
+          handlePageSizeChange(model);
         }}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[5, 10, 25]}
       />
     </div>
   );

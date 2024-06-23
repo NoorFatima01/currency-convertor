@@ -95,6 +95,8 @@ router.get("/symbols", async (req: Request, res: Response) => {
 
 router.get("/history/:userId", async (req: Request, res: Response) => {
   const userId = req.params.userId;
+  const page = parseInt(req.query.page as string) || 0;
+  const pageSize = parseInt(req.query.pageSize as string) || 5;
 
   if (!userId) {
     return res.status(400).json({ error: "Missing required parameter: userId" });
@@ -102,15 +104,19 @@ router.get("/history/:userId", async (req: Request, res: Response) => {
 
   try {
     const historyCollection = db.collection("history");
-    const userHistory = await historyCollection.where("userId", "==", userId).get();
+    const userHistory = await historyCollection.where("userId", "==", userId)
+      .offset(page * pageSize)
+      .limit(pageSize)
+      .get();
     const history = userHistory.docs.map(doc => doc.data());
-    console.log(history)
+    const totalDocs = (await historyCollection.where("userId", "==", userId).get()).size;
 
-    res.json({ success: true, history });
+    res.json({ success: true, history, totalDocs });
   } catch (error: any) {
     console.error("Error fetching history:", error.message);
     res.status(500).json({ error: "Failed to fetch history" });
   }
 });
+
 
 export default router;

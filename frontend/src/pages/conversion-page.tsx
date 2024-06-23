@@ -1,4 +1,3 @@
-import React from 'react'
 import ConversionForm from '../forms/conversion-form'
 
 const ConversionPage = () => {

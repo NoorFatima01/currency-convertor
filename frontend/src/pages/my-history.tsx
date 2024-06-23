@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import HistoryTable from "../components/history-table";
 import { formatDate, FirestoreTimestamp } from "../utils/utils";
 
@@ -21,6 +22,18 @@ const HistoryPage = () => {
 
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalDocs, setTotalDocs] = useState(0);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const pageParam = parseInt(params.get('page') || '1') - 1;
+    setPage(pageParam);
+  }, [location.search]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -31,10 +44,12 @@ const HistoryPage = () => {
 
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/exchange/history/${uid}`
+          `${import.meta.env.VITE_BASE_URL}/api/exchange/history/${uid}`,
+          { params: { page, pageSize } }
         );
-        const data = response.data.history;
-        setHistory(data);
+        const { history, totalDocs } = response.data;
+        setHistory(history);
+        setTotalDocs(totalDocs);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching history:", error);
@@ -43,7 +58,11 @@ const HistoryPage = () => {
     };
 
     fetchHistory();
-  }, [uid]);
+  }, [uid, page, pageSize]);
+
+  useEffect(() => {
+    navigate(`/my-history?page=${page + 1}`);
+  }, [page, navigate]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -51,7 +70,7 @@ const HistoryPage = () => {
 
   const rows = history.map((item: HistoryItem, index) => {
     return {
-      id: index + 1,
+      id: index + 1 + page * pageSize,
       from: item.from,
       to: item.to,
       amount: item.amount,
@@ -67,7 +86,14 @@ const HistoryPage = () => {
         {history.length === 0 ? (
           <div>No history available</div>
         ) : (
-          <HistoryTable rows={rows} />
+          <HistoryTable
+            rows={rows}
+            page={page}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            rowCount={totalDocs}
+          />
         )}
       </div>
     </div>

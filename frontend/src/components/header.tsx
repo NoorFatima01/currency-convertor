@@ -3,11 +3,9 @@ import { getAuth, signOut } from "firebase/auth";
 const Header = () => {
   const auth = getAuth();
   const user = auth.currentUser;
-  console.log(user);
 
   const signOutFunction = () => {
     signOut(auth).then(() => {
-      console.log("signed out");
       window.location.reload();
     }).catch((error: unknown) => {
       console.log(error);
