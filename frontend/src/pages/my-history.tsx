@@ -82,20 +82,24 @@ const HistoryPage = () => {
   return (
     <div className="m-4">
       <h1 className="text-2xl font-bold text-darkishBlue mt-8">My History</h1>
-      <div className="mt-4">
-        {history.length === 0 ? (
-          <div>No history available</div>
-        ) : (
-          <HistoryTable
-            rows={rows}
-            page={page}
-            pageSize={pageSize}
-            setPage={setPage}
-            setPageSize={setPageSize}
-            rowCount={totalDocs}
-          />
-        )}
-      </div>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="mt-4">
+          {history.length === 0 ? (
+            <div>No history available</div>
+          ) : (
+            <HistoryTable
+              rows={rows}
+              page={page}
+              pageSize={pageSize}
+              setPage={setPage}
+              setPageSize={setPageSize}
+              rowCount={totalDocs}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };
