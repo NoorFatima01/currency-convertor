@@ -12,7 +12,7 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [user, setUser] = useState<User | null>(null);
+  const [, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
