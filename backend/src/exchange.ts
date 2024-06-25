@@ -2,6 +2,7 @@ import axios from "axios";
 import express from "express";
 import { Request, Response } from "express";
 import { db } from "./firebaseAdmin";
+import firebaseAuthMiddleware from "./firebaseAuthMiddleware";
 
 const router = express.Router();
 
@@ -93,7 +94,7 @@ router.get("/symbols", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/history/:userId", async (req: Request, res: Response) => {
+router.get("/history/:userId", firebaseAuthMiddleware, async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const page = parseInt(req.query.page as string) || 0;
   const pageSize = parseInt(req.query.pageSize as string) || 5;
