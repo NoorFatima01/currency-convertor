@@ -11,5 +11,8 @@ export default defineConfig({
   preview: {
     port: parseInt(process.env.PORT as string) || 4173,  // Default to 4173 if PORT is not set
     host: '0.0.0.0',
-  }
+  },
+  build: {
+    outDir: 'dist',
+  },
 })
