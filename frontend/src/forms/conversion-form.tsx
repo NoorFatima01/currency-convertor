@@ -39,10 +39,12 @@ const ConversionForm = () => {
   const [loading, setLoading] = useState(false);
   const prevConvertedAmount = useRef<number | null>(null);
 
+  const baseUrl = import.meta.env.VITE_BASE_URL || "";
+
   const fetchCurrencies = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/exchange/symbols`
+        `${baseUrl}/api/exchange/symbols`
       );
       const data = response.data.data;
 
@@ -68,15 +70,11 @@ const ConversionForm = () => {
     getSymbols();
   }, []);
 
-  useEffect(() => {
-    console.log(symbols);
-  }, [symbols]);
-
   const onSubmit = async (data: ConversionForm) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/exchange/convert`,
+        `${baseUrl}/api/exchange/convert`,
         {
           params: {
             from: data.fromCurrency,

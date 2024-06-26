@@ -29,9 +29,11 @@ const HistoryPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const baseUrl = import.meta.env.VITE_BASE_URL || "";
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const pageParam = parseInt(params.get('page') || '1') - 1;
+    const pageParam = parseInt(params.get("page") || "1") - 1;
     setPage(pageParam);
   }, [location.search]);
 
@@ -43,10 +45,21 @@ const HistoryPage = () => {
       }
 
       try {
+        const user = auth.currentUser;
+        if (!user) {
+          return;
+        }
+        const idToken = await auth.currentUser.getIdToken(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/exchange/history/${uid}`,
-          { params: { page, pageSize } }
+          `${baseUrl}/api/exchange/history/${uid}`,
+          {
+            params: { page, pageSize },
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
         );
+
         const { history, totalDocs } = response.data;
         setHistory(history);
         setTotalDocs(totalDocs);
@@ -68,6 +81,10 @@ const HistoryPage = () => {
     return <div>Loading...</div>;
   }
 
+  if (!history) {
+    return <div>No history available</div>;
+  }
+
   const rows = history.map((item: HistoryItem, index) => {
     return {
       id: index + 1 + page * pageSize,
@@ -86,18 +103,14 @@ const HistoryPage = () => {
         <div>Loading...</div>
       ) : (
         <div className="mt-4">
-          {history.length === 0 ? (
-            <div>No history available</div>
-          ) : (
-            <HistoryTable
-              rows={rows}
-              page={page}
-              pageSize={pageSize}
-              setPage={setPage}
-              setPageSize={setPageSize}
-              rowCount={totalDocs}
-            />
-          )}
+          <HistoryTable
+            rows={rows}
+            page={page}
+            pageSize={pageSize}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            rowCount={totalDocs}
+          />
         </div>
       )}
     </div>
